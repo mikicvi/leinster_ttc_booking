@@ -264,5 +264,5 @@ app.get('/tasks', (req, res) => {
 
 // Create HTTPS server
 https.createServer({ key, cert }, app).listen(PORT, () => {
-	console.log(`Server is running on https://localhost:${PORT}`);
+	log(`Server is running on https://localhost:${PORT}`);
 });
