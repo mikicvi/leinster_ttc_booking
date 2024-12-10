@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>LCC TT Reservation Scheduler</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<style>
+			body {
+				background-color: #18181b;
+				color: #e4e4e7;
+				font-family: 'Inter', sans-serif;
+			}
+			.form-select {
+				background-color: #27272a;
+				color: #a1a1aa;
+				border: 1px solid #3f3f46;
+			}
+			.form-select:focus {
+				border-color: #6366f1;
+				box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+			}
+
+			.nav-tabs .nav-link {
+				color: #a1a1aa;
+			}
+
+			.nav-tabs .nav-link.active {
+				color: #e4e4e7;
+				background-color: #27272a;
+			}
+
+			.tab-content {
+				background-color: #1f1f23;
+				padding: 20px;
+				border-radius: 8px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+			}
+
+			.input-group .form-control {
+				background-color: #27272a;
+				color: #a1a1aa;
+				border: 1px solid #3f3f46;
+			}
+
+			.input-group .form-control:focus {
+				border-color: #6366f1;
+				box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+			}
+
+			.input-group-text {
+				background-color: #27272a;
+				color: #a1a1aa;
+				border: 1px solid #3f3f46;
+				min-width: 100px;
+			}
+
+			.btn-primary {
+				background-color: #6366f1;
+			}
+
+			.btn-primary:hover {
+				background-color: #4f46e5;
+			}
+
+			.btn-secondary {
+				background-color: #4ade80;
+			}
+
+			.btn-secondary:hover {
+				background-color: #22c55e;
+			}
+
+			.btn-danger {
+				background-color: #f87171;
+			}
+
+			.btn-danger:hover {
+				background-color: #ef4444;
+			}
+
+			#logs-content {
+				white-space: pre-wrap;
+				font-family: 'Fira Code', monospace;
+				font-size: 0.9rem;
+				color: #a1a1aa;
+				background-color: #1f1f23;
+				padding: 10px;
+				border-radius: 6px;
+			}
+
+			.input-group .form-control::placeholder {
+				color: #a1a1aa;
+				opacity: 1; /* Ensure full visibility */
+			}
+
+			.input-group .form-control:-ms-input-placeholder {
+				color: #a1a1aa; /* For IE */
+			}
+
+			.input-group .form-control::-ms-input-placeholder {
+				color: #a1a1aa; /* For Edge */
+			}
+		</style>
+	</head>
+	<body>
+		<header class="py-3 mb-4" style="background-color: #27272a">
+			<div class="container text-center">
+				<h1 style="color: #e4e4e7">LCC TT Reservation Scheduler</h1>
+			</div>
+		</header>
+		<main class="container">
+			<ul class="nav nav-tabs" id="tabs" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button
+						class="nav-link active"
+						id="config-tab"
+						data-bs-toggle="tab"
+						data-bs-target="#config-tab-pane"
+						type="button"
+						role="tab"
+						aria-controls="config-tab-pane"
+						aria-selected="true"
+					>
+						Configure Tasks
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button
+						class="nav-link"
+						id="tasks-tab"
+						data-bs-toggle="tab"
+						data-bs-target="#tasks-tab-pane"
+						type="button"
+						role="tab"
+						aria-controls="tasks-tab-pane"
+						aria-selected="false"
+					>
+						Active Tasks
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button
+						class="nav-link"
+						id="logs-tab"
+						data-bs-toggle="tab"
+						data-bs-target="#logs-tab-pane"
+						type="button"
+						role="tab"
+						aria-controls="logs-tab-pane"
+						aria-selected="false"
+					>
+						Logs
+					</button>
+				</li>
+			</ul>
+
+			<div class="tab-content mt-3">
+				<!-- Configure Tasks Tab -->
+				<div
+					class="tab-pane fade show active"
+					id="config-tab-pane"
+					role="tabpanel"
+					aria-labelledby="config-tab"
+				>
+					<div class="mb-3">
+						<h2>Configure and Manage Tasks</h2>
+						<form id="control-form">
+							<div class="input-group mb-3">
+								<span class="input-group-text">Date</span>
+								<input type="date" class="form-control" id="date" name="date" required />
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text">Hour</span>
+								<input
+									type="text"
+									class="form-control"
+									id="hour"
+									name="hour"
+									placeholder="e.g 76 for 7PM, 80 for 8PM etc..."
+									required
+								/>
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text">Court</span>
+								<input
+									type="text"
+									class="form-control"
+									id="court"
+									name="court"
+									placeholder="e.g 1 for Hall Tb 1, 2 for Hall Tb 2"
+									required
+								/>
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text">Email Info</span>
+								<input
+									type="text"
+									class="form-control"
+									id="emailInfo"
+									name="emailInfo"
+									placeholder="e.g Hall Tb 2 at 7:00 PM"
+									required
+								/>
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text">Name</span>
+								<input
+									type="text"
+									class="form-control"
+									id="name"
+									name="name"
+									placeholder="Your Name"
+									required
+								/>
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text">Recurring</span>
+								<select class="form-select" id="recurring" name="recurring">
+									<option value="true">Yes</option>
+									<option value="false">No</option>
+								</select>
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text">Task Key</span>
+								<input
+									type="text"
+									class="form-control"
+									id="taskKey"
+									name="taskKey"
+									placeholder="e.g., John_Doe_1_76_1 - only for stopping a task"
+								/>
+							</div>
+							<div class="w-100 d-flex justify-content-center">
+								<button type="button" class="btn btn-primary mb-1 w-100" onclick="startTask()">
+									Start Task
+								</button>
+								<button type="button" class="btn btn-secondary mb-1 w-100" onclick="testTask()">
+									Test Task
+								</button>
+								<button type="button" class="btn btn-danger mb-1 w-100" onclick="stopTask()">
+									Stop Task
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<!-- Active Tasks Tab -->
+				<div class="tab-pane fade" id="tasks-tab-pane" role="tabpanel" aria-labelledby="tasks-tab">
+					<h2>Active Tasks</h2>
+					<ul id="tasks-list" class="list-group"></ul>
+				</div>
+
+				<!-- Logs Tab -->
+				<div class="tab-pane fade" id="logs-tab-pane" role="tabpanel" aria-labelledby="logs-tab">
+					<h2>Logs</h2>
+					<pre id="logs-content" class="bg-dark text-white p-3 rounded"></pre>
+				</div>
+			</div>
+		</main>
+		<!-- Toast Container -->
+		<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			// Utility to show toast
+			function showToast(message, type = 'info') {
+				const toastContainer = document.getElementById('toastContainer');
+				const toast = document.createElement('div');
+				toast.className = `toast align-items-center text-bg-${type} border-0`;
+				toast.setAttribute('role', 'alert');
+				toast.setAttribute('aria-live', 'assertive');
+				toast.setAttribute('aria-atomic', 'true');
+
+				toast.innerHTML = `
+				<div class="d-flex">
+					<div class="toast-body">${message}</div>
+					<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+			`;
+
+				toastContainer.appendChild(toast);
+
+				const bsToast = new bootstrap.Toast(toast);
+				bsToast.show();
+
+				// Remove the toast after it's hidden
+				toast.addEventListener('hidden.bs.toast', () => {
+					toast.remove();
+				});
+			}
+
+			async function fetchLogs() {
+				const response = await fetch('/logs');
+				const logs = await response.json();
+				document.getElementById('logs-content').textContent = logs.join('\n');
+			}
+
+			async function fetchTasks() {
+				const response = await fetch('/tasks');
+				const tasks = await response.json();
+				const tasksList = document.getElementById('tasks-list');
+				tasksList.innerHTML = '';
+				tasks.forEach((task) => {
+					const listItem = document.createElement('li');
+					listItem.className = 'list-group-item bg-secondary text-white mb-1';
+					listItem.textContent = task;
+					tasksList.appendChild(listItem);
+				});
+			}
+
+			document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((tab) => {
+				tab.addEventListener('shown.bs.tab', (event) => {
+					if (event.target.id === 'logs-tab') {
+						fetchLogs();
+					} else if (event.target.id === 'tasks-tab') {
+						fetchTasks();
+					}
+				});
+			});
+
+			async function startTask() {
+				const formData = new FormData(document.getElementById('control-form'));
+				const data = Object.fromEntries(formData.entries());
+				try {
+					const response = await fetch('/start', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(data),
+					});
+					const result = await response.json();
+					showToast(result.message, 'success');
+				} catch (error) {
+					showToast('Failed to start task.', 'danger');
+				}
+			}
+
+			async function stopTask() {
+				const taskKey = document.getElementById('taskKey').value;
+				if (!taskKey) {
+					showToast('Task Key is required to stop a task.', 'warning');
+					return;
+				}
+				try {
+					const response = await fetch('/stop', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ taskKey }),
+					});
+					const result = await response.json();
+					showToast(result.message, 'success');
+				} catch (error) {
+					showToast('Failed to stop task.', 'danger');
+				}
+				fetchTasks();
+			}
+
+			async function testTask() {
+				const formData = new FormData(document.getElementById('control-form'));
+				const data = Object.fromEntries(formData.entries());
+				try {
+					const response = await fetch('/test', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(data),
+					});
+					const result = await response.json();
+					showToast(result.message, 'info');
+					fetchLogs();
+				} catch (error) {
+					showToast('Failed to test task.', 'danger');
+				}
+			}
+		</script>
+	</body>
+</html>

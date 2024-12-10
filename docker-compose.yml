@@ -1,0 +1,13 @@
+services:
+    app:
+        build: .
+        ports:
+            - '3037:3037'
+        environment:
+            - EMAIL=${EMAIL}
+            - PASSWORD=${PASSWORD}
+            - DIR=${DIR}
+            - PORT=${PORT}
+        volumes:
+            - .:/app
+        command: npm start
