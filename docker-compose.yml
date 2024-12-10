@@ -10,4 +10,5 @@ services:
             - PORT=${PORT}
         volumes:
             - .:/app
+            - ./certs:/app/certs
         command: npm start
