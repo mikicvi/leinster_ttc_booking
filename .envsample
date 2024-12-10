@@ -1,0 +1,4 @@
+EMAIL=email@user.com
+PASSWORD=UserPassword
+DIR=leinstertabletennis
+PORT=3000
