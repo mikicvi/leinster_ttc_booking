@@ -257,12 +257,18 @@ app.get('/tasks', (req, res) => {
 	res.json(tasks.map((t) => t.key));
 });
 
-// // Start server
-// app.listen(PORT, () => {
-// 	log(`Server running on http://localhost:${PORT}`);
-// });
-
-// Create HTTPS server
-https.createServer({ key, cert }, app).listen(PORT, () => {
-	log(`Server is running on https://localhost:${PORT}`);
-});
+// Start server
+if (
+	fs.existsSync(path.join(__dirname, 'certs', 'key.pem')) &&
+	fs.existsSync(path.join(__dirname, 'certs', 'cert.pem'))
+) {
+	// Create HTTPS server
+	https.createServer({ key, cert }, app).listen(PORT, () => {
+		log(`Server is running on https://localhost:${PORT}`);
+	});
+} else {
+	// Fallback to HTTP server
+	app.listen(PORT, () => {
+		log(`Server running on http://localhost:${PORT}`);
+	});
+}
