@@ -3,10 +3,17 @@ const bodyParser = require('body-parser');
 const schedule = require('node-schedule');
 const axios = require('axios');
 const qs = require('qs');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// SSL Certificate
+const key = fs.readFileSync(path.join(__dirname, 'certs', 'key.pem'));
+const cert = fs.readFileSync(path.join(__dirname, 'certs', 'cert.pem'));
 
 let tasks = [];
 const logs = [];
@@ -250,7 +257,12 @@ app.get('/tasks', (req, res) => {
 	res.json(tasks.map((t) => t.key));
 });
 
-// Start server
-app.listen(PORT, () => {
-	log(`Server running on http://localhost:${PORT}`);
+// // Start server
+// app.listen(PORT, () => {
+// 	log(`Server running on http://localhost:${PORT}`);
+// });
+
+// Create HTTPS server
+https.createServer({ key, cert }, app).listen(PORT, () => {
+	console.log(`Server is running on https://localhost:${PORT}`);
 });
