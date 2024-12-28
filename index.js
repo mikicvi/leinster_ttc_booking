@@ -84,7 +84,7 @@ async function makeReservation(cookie, dir, reservationDetails) {
 		court,
 		email_info: emailInfo,
 		view: '0',
-		duration: 4,
+		duration: 4, // maps to 1 hour
 		name,
 		submit: 'Submit',
 	};
@@ -117,7 +117,7 @@ async function makeReservation(cookie, dir, reservationDetails) {
 			log(`Response status: ${error.response.status}`);
 			log(`Response data: ${JSON.stringify(error.response.data)}`);
 		}
-		throw error;
+		retryMakeReservation(dir, reservationDetails);
 	}
 }
 
@@ -135,11 +135,11 @@ async function retryMakeReservation(dir, reservationDetails, retries = 3) {
 }
 
 function scheduleTask(taskKey, email, password, dir, reservationDetails) {
-	// Calculate the exact run time (7 days before the target date at 12:00:20 AM in the specified timezone)
+	// Calculate the exact run time (7 days before the target date at 12:01:00 AM in the specified timezone)
 	const targetDate = new Date(reservationDetails.date);
 	const bookingReleaseDate = new Date(targetDate);
 	bookingReleaseDate.setDate(targetDate.getDate() - 7); // 7 days before the target date
-	bookingReleaseDate.setHours(0, 0, 20, 0); // Set time to 12:00:20 AM
+	bookingReleaseDate.setHours(0, 1, 0, 0); // Set time to 12:00:20 AM
 
 	// Create a RecurrenceRule with timezone
 	const rule = new schedule.RecurrenceRule();
@@ -161,7 +161,7 @@ function scheduleTask(taskKey, email, password, dir, reservationDetails) {
 
 				// If recurring, calculate the next week's target date
 				console.log(`recurring: ${reservationDetails.recurring}`);
-				if (reservationDetails.recurring == 'true') {
+				if (reservationDetails.recurring === 'true') {
 					const nextWeek = new Date(targetDate);
 					nextWeek.setDate(targetDate.getDate() + 7);
 					reservationDetails.date = nextWeek.toISOString().split('T')[0];
@@ -208,8 +208,8 @@ app.post('/stop', (req, res) => {
 	// Find the task by taskKey
 	const taskIndex = tasks.findIndex((t) => t.key === taskKey);
 
-	// Log current tasks array
-	log(`Current tasks: ${JSON.stringify(tasks)}`);
+	// Log current task keys
+	log(`Current task keys: ${tasks.map(t => t.key).join(', ')}`);
 
 	// Handle case where taskKey is not found
 	if (taskIndex >= 0) {
