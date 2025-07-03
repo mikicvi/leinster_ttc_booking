@@ -101,6 +101,12 @@
 			.input-group .form-control::-ms-input-placeholder {
 				color: #a1a1aa; /* For Edge */
 			}
+
+			.alert-info {
+				background-color: #1e3a8a;
+				border-color: #3b82f6;
+				color: #bfdbfe;
+			}
 		</style>
 	</head>
 	<body>
@@ -165,48 +171,48 @@
 				>
 					<div class="mb-3">
 						<h2>Configure and Manage Tasks</h2>
+						<div class="alert alert-info mb-3">
+							<strong>Booking Schedule:</strong><br />
+							• <strong>Monday & Tuesday:</strong> 7PM-10PM<br />
+							• <strong>Sunday:</strong> 12PM-5PM<br />
+							• Other days are not available for booking
+						</div>
 						<form id="control-form">
 							<div class="input-group mb-3">
 								<span class="input-group-text">Date</span>
 								<input type="date" class="form-control" id="date" name="date" required />
 							</div>
 							<div class="input-group mb-3">
-								<span class="input-group-text">Hour</span>
-								<input
-									inputmode="numeric"
-									pattern="[0-9]*"
-									type="text"
-									class="form-control"
-									id="hour"
-									name="hour"
-									placeholder="e.g 76 for 7PM, 80 for 8PM etc..."
-									required
-								/>
+								<span class="input-group-text">Time</span>
+								<select class="form-select" id="hour" name="hour" required>
+									<option value="">Select a time...</option>
+									<optgroup label="Monday & Tuesday">
+										<option value="76">7:00 PM</option>
+										<option value="80">8:00 PM</option>
+										<option value="84">9:00 PM</option>
+										<option value="88">10:00 PM</option>
+									</optgroup>
+									<optgroup label="Sunday">
+										<option value="48">12:00 PM</option>
+										<option value="52">1:00 PM</option>
+										<option value="56">2:00 PM</option>
+										<option value="60">3:00 PM</option>
+										<option value="64">4:00 PM</option>
+										<option value="68">5:00 PM</option>
+									</optgroup>
+								</select>
 							</div>
 							<div class="input-group mb-3">
 								<span class="input-group-text">Court</span>
-								<input
-									inputmode="numeric"
-									pattern="[0-9]*"
-									type="text"
-									class="form-control"
-									id="court"
-									name="court"
-									placeholder="e.g 1 for Hall Tb 1, 2 for Hall Tb 2"
-									required
-								/>
-							</div>
-							<div class="input-group mb-3">
-								<span class="input-group-text">Email Info</span>
-								<input
-									type="text"
-									class="form-control"
-									id="emailInfo"
-									name="emailInfo"
-									placeholder="e.g Hall Tb 2 at 7:00 PM"
-									value="Hall Tb 2 at 7:00 PM"
-									required
-								/>
+								<select class="form-select" id="court" name="court" required>
+									<option value="">Select a court...</option>
+									<option value="1">Hall Tb 1</option>
+									<option value="2">Hall Tb 2</option>
+									<option value="3">Hall Tb 3</option>
+									<option value="4">Hall Tb 4</option>
+									<option value="5">Hall Tb 5</option>
+									<option value="6">Hall Tb 6</option>
+								</select>
 							</div>
 							<div class="input-group mb-3">
 								<span class="input-group-text">Name</span>
@@ -222,8 +228,8 @@
 							<div class="input-group mb-3">
 								<span class="input-group-text">Recurring</span>
 								<select class="form-select" id="recurring" name="recurring">
-									<option value="true">Yes</option>
-									<option value="false">No</option>
+									<option value="false">No - One time booking</option>
+									<option value="true">Yes - Weekly recurring</option>
 								</select>
 							</div>
 							<div class="input-group mb-3">
@@ -233,7 +239,7 @@
 									class="form-control"
 									id="taskKey"
 									name="taskKey"
-									placeholder="e.g., John_Doe_1_76_1 - only for stopping a task"
+									placeholder="Only needed for stopping a task"
 								/>
 							</div>
 							<div class="w-100 d-flex justify-content-center">
@@ -269,6 +275,35 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
+			// Hour to time mapping for display
+			const hourToTime = {
+				76: '7:00 PM',
+				80: '8:00 PM',
+				84: '9:00 PM',
+				88: '10:00 PM',
+				48: '12:00 PM',
+				52: '1:00 PM',
+				56: '2:00 PM',
+				60: '3:00 PM',
+				64: '4:00 PM',
+				68: '5:00 PM',
+			};
+
+			// Auto-generate emailInfo when court or hour changes
+			function updateEmailInfo() {
+				const court = document.getElementById('court').value;
+				const hour = document.getElementById('hour').value;
+
+				if (court && hour && hourToTime[hour]) {
+					const emailInfo = `Hall Tb ${court} at ${hourToTime[hour]}`;
+					// We'll add this as a hidden field or auto-generate it when submitting
+				}
+			}
+
+			// Add event listeners for auto-updating
+			document.getElementById('court').addEventListener('change', updateEmailInfo);
+			document.getElementById('hour').addEventListener('change', updateEmailInfo);
+
 			// Utility to show toast
 			function showToast(message, type = 'info') {
 				const toastContainer = document.getElementById('toastContainer');
@@ -294,6 +329,40 @@
 				toast.addEventListener('hidden.bs.toast', () => {
 					toast.remove();
 				});
+			}
+
+			// Simplified validation for booking days and times
+			function validateBooking(date, hour) {
+				const bookingDate = new Date(date);
+				const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 1 = Monday, 2 = Tuesday, etc.
+				const hourNum = parseInt(hour);
+
+				// Valid combinations by day
+				const validCombinations = {
+					0: [48, 52, 56, 60, 64, 68], // Sunday
+					1: [76, 80, 84, 88], // Monday
+					2: [76, 80, 84, 88], // Tuesday
+				};
+
+				if (!validCombinations[dayOfWeek]) {
+					const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+					return {
+						valid: false,
+						message: `Booking not available on ${dayNames[dayOfWeek]}. Available days: Monday, Tuesday, and Sunday.`,
+					};
+				}
+
+				if (!validCombinations[dayOfWeek].includes(hourNum)) {
+					const dayNames = ['Sunday', 'Monday', 'Tuesday'];
+					return {
+						valid: false,
+						message: `Selected time not available for ${
+							dayNames[dayOfWeek === 0 ? 0 : dayOfWeek === 1 ? 1 : 2]
+						}. Please select a valid time slot.`,
+					};
+				}
+
+				return { valid: true };
 			}
 
 			async function fetchLogs() {
@@ -328,6 +397,19 @@
 			async function startTask() {
 				const formData = new FormData(document.getElementById('control-form'));
 				const data = Object.fromEntries(formData.entries());
+
+				// Auto-generate emailInfo
+				if (data.court && data.hour && hourToTime[data.hour]) {
+					data.emailInfo = `Hall Tb ${data.court} at ${hourToTime[data.hour]}`;
+				}
+
+				// Validate booking day and time
+				const validation = validateBooking(data.date, data.hour);
+				if (!validation.valid) {
+					showToast(validation.message, 'warning');
+					return;
+				}
+
 				try {
 					const response = await fetch('/start', {
 						method: 'POST',
@@ -335,7 +417,7 @@
 						body: JSON.stringify(data),
 					});
 					const result = await response.json();
-					showToast(result.message, 'success');
+					showToast(result.message, response.ok ? 'success' : 'danger');
 				} catch (error) {
 					showToast('Failed to start task.', 'danger');
 				}
@@ -364,6 +446,19 @@
 			async function testTask() {
 				const formData = new FormData(document.getElementById('control-form'));
 				const data = Object.fromEntries(formData.entries());
+
+				// Auto-generate emailInfo
+				if (data.court && data.hour && hourToTime[data.hour]) {
+					data.emailInfo = `Hall Tb ${data.court} at ${hourToTime[data.hour]}`;
+				}
+
+				// Validate booking day and time
+				const validation = validateBooking(data.date, data.hour);
+				if (!validation.valid) {
+					showToast(validation.message, 'warning');
+					return;
+				}
+
 				try {
 					const response = await fetch('/test', {
 						method: 'POST',
@@ -371,7 +466,7 @@
 						body: JSON.stringify(data),
 					});
 					const result = await response.json();
-					showToast(result.message, 'info');
+					showToast(result.message, response.ok ? 'info' : 'danger');
 					fetchLogs();
 				} catch (error) {
 					showToast('Failed to test task.', 'danger');
