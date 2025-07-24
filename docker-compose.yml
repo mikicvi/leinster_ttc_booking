@@ -1,5 +1,6 @@
 services:
     app:
+        image: mikicv/leinster_ttc_booking:latest
         build: .
         ports:
             - '3037:3037'
@@ -9,6 +10,7 @@ services:
             - DIR=${DIR}
             - PORT=${PORT}
         volumes:
-            - .:/app
+            # - .:/app
             - ./certs:/app/certs
+            - ./data:/app/data
         command: npm start
