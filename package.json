@@ -1,24 +1,42 @@
 {
   "name": "leinster_ttc_booking",
-  "version": "0.1.6",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "Automated booking system for Leinster Table Tennis Club with scheduling and persistence",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "migrate": "node scripts/migrate.js",
+    "db:init": "node scripts/migrate.js init",
+    "db:backup": "node scripts/migrate.js backup",
+    "db:cleanup": "node scripts/migrate.js cleanup",
+    "db:stats": "node scripts/migrate.js stats"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "mikicvi",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.10.0",
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "node-schedule": "^2.1.1",
-    "qs": "^6.13.1"
+    "qs": "^6.13.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leinster-ttc/booking-system"
+  },
+  "keywords": [
+    "booking",
+    "automation",
+    "scheduling",
+    "table-tennis"
+  ]
 }
