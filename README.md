@@ -1,5 +1,8 @@
 # Leinster TTC Booking
 
+
+# This repository is now archived and will not receive any further updates. The club is moving away from using this booking system.       
+
 Booking automation app for LCC table tennis. No more missing out on booking a slot - automated and optionally recurring with full persistence and database logging.
 
 ## Features
